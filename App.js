@@ -17,6 +17,7 @@ export default function App() {
   const [city, setCity] = useState("Loading...");
   const [days, setDays] = useState("");
   const [doC, setDoC] = useState("");
+  const [foreW, SetForW] = useState({});
 
   const getLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -37,6 +38,8 @@ export default function App() {
     setDays(json.current.weather[0].main);
     setCity(location[0].city)
     setDoC(json.current.temp.toFixed(1));
+    console.log(json.hourly[0].weather[0].main);
+    console.log(json.hourly[0].temp);
 
   }
 
@@ -46,16 +49,25 @@ useEffect(() => {
 
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} >
       {/* <ImageBackground source={image} resizeMode="cover" style={styles.image}> */}
+
+    
 
       <Text style={styles.city}>{city}</Text>
       <Text style={styles.days}>{days}</Text>
       <Text style={styles.doC}>{doC}°C</Text>
       <Text style={styles.text}>오늘은 이렇게 입고나가요!</Text>
       <Text style={styles.wear}>🧤</Text>
+
+
+
+
       {/* </ImageBackground> */}
     </View>
+
+
+    
   );
 }
 
@@ -63,7 +75,6 @@ const styles= StyleSheet.create({
   container: {
     flex:1,
     backgroundColor:"pink",
-    
     alignItems:"center"
   },
   city : {
@@ -84,6 +95,7 @@ const styles= StyleSheet.create({
     marginTop: 40
   },
   wear : {
+    marginTop: 15,
     fontSize : 20,
   },
   image : {
