@@ -17,7 +17,7 @@ export default function App() {
   const [city, setCity] = useState("Loading...");
   const [days, setDays] = useState("");
   const [doC, setDoC] = useState("");
-  const [foreW, SetForW] = useState({});
+  const [foreW, setForeW] = useState({});
 
   const getLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -38,10 +38,20 @@ export default function App() {
     setDays(json.current.weather[0].main);
     setCity(location[0].city)
     setDoC(json.current.temp.toFixed(1));
-    console.log(json.hourly[0].weather[0].main);
-    console.log(json.hourly[0].temp);
+
+    // 시간별 날씨 객체 input
+
+    const forWobj = {}
+
+    for(let i = 0; i<6; i++){
+      forWobj['hour_'+(i+1)] = [json.hourly[i].weather[0].main, json.hourly[i].temp]
+      //이 부분의 해결 필요...
+      setForeW(forWobj)
+    }
 
   }
+
+
 
 useEffect(() => {
   getLocation();
@@ -52,15 +62,18 @@ useEffect(() => {
     <View style={styles.container} >
       {/* <ImageBackground source={image} resizeMode="cover" style={styles.image}> */}
 
-    
-
+      <View>
       <Text style={styles.city}>{city}</Text>
       <Text style={styles.days}>{days}</Text>
       <Text style={styles.doC}>{doC}°C</Text>
       <Text style={styles.text}>오늘은 이렇게 입고나가요!</Text>
       <Text style={styles.wear}>🧤</Text>
-
-
+      </View>
+      
+    <View style={styles.forecast}>
+      <Text>{foreW.hour_1[0]}</Text>
+      <Text>{foreW.hour_1[1]}</Text>
+    </View>
 
 
       {/* </ImageBackground> */}
@@ -102,6 +115,11 @@ const styles= StyleSheet.create({
     width: "100%", 
     height: "100%"
   },
+
+  forecast : {
+    fontSize : 12,
+  },
+
   map: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
