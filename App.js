@@ -2,8 +2,6 @@ import * as Location from 'expo-location';
 import React,{useState, useEffect} from 'react';
 
 import { Text, View, StyleSheet, Dimensions, ImageBackground } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
 const API_KEY = "32d86a6f1473247c8b4fd7aca2ab71a2"
@@ -14,10 +12,20 @@ const image = {
 
 export default function App() {
 
+
   const [city, setCity] = useState("Loading...");
   const [days, setDays] = useState("");
   const [doC, setDoC] = useState("");
   const [foreW, setForeW] = useState({});
+  const [condition, setCondition] = useState(true);
+
+  useEffect(() => {
+    setCondition(!condition)
+  },[foreW])
+  
+  useEffect(() => {
+    getLocation();
+  },[])
 
   const getLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -43,24 +51,26 @@ export default function App() {
 
     const forWobj = {}
 
-    for(let i = 0; i<6; i++){
-      forWobj['hour_'+(i+1)] = [json.hourly[i].weather[0].main, json.hourly[i].temp]
-      //이 부분의 해결 필요...
+    forWobjFunc = () => {
+    
+        for(let i = 0; i<6; i ++){
+        forWobj['hour_'+(i+1)] = { main : json.hourly[i].weather[0].main, temp : json.hourly[i].temp}        
+      }
+
       setForeW(forWobj)
     }
+  
+    forWobjFunc()
 
-  }
+    }
+    
 
 
-
-useEffect(() => {
-  getLocation();
-},[])
 
 
   return (
+
     <View style={styles.container} >
-      {/* <ImageBackground source={image} resizeMode="cover" style={styles.image}> */}
 
       <View>
       <Text style={styles.city}>{city}</Text>
@@ -71,18 +81,53 @@ useEffect(() => {
       </View>
       
     <View style={styles.forecast}>
-      <Text>{foreW.hour_1[0]}</Text>
-      <Text>{foreW.hour_1[1]}</Text>
+      
+      {condition ? 
+      
+
+      <View style={styles.foreContainer}>
+
+      <View style={styles.foreContainerText}>
+      <Text>{foreW?.hour_1?.main}</Text>
+      <Text>{foreW?.hour_1?.temp}</Text>
+      </View>
+
+      <View style={styles.foreContainerText}>
+      <Text>{foreW?.hour_2?.main}</Text>
+      <Text>{foreW?.hour_2?.temp}</Text>
+      </View>
+
+      <View style={styles.foreContainerText}>
+      <Text>{foreW?.hour_3?.main}</Text>
+      <Text>{foreW?.hour_3?.temp}</Text>
+      </View>
+
+      <View style={styles.foreContainerText}>
+      <Text>{foreW?.hour_4?.main}</Text>
+      <Text>{foreW?.hour_4?.temp}</Text>
+      </View>
+
+      <View style={styles.foreContainer.foreContainerText}>
+      <Text>{foreW?.hour_5?.main}</Text>
+      <Text>{foreW?.hour_5?.temp}</Text>
+      </View>
+
+      <View style={styles.foreContainer.foreContainerText}>
+      <Text>{foreW?.hour_6?.main}</Text>
+      <Text>{foreW?.hour_6?.temp}</Text>
+      </View>
+
+      </View>
+
+      : <Text>Loading</Text>}
+
     </View>
 
-
-      {/* </ImageBackground> */}
     </View>
 
-
-    
   );
-}
+
+      }
 
 const styles= StyleSheet.create({
   container: {
@@ -119,11 +164,16 @@ const styles= StyleSheet.create({
   forecast : {
     fontSize : 12,
   },
-
-  map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+  foreContainer : {
+    flex:1,
+    flexDirection:"row",
+    paddingTop:20,
+    justifyContent:"space-evenly"
   },
+  foreContainerText : {
+    alignItems:"center"
+  },
+
 })
 
 
