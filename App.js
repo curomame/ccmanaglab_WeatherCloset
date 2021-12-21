@@ -1,10 +1,14 @@
 import * as Location from 'expo-location';
 import React,{useState, useEffect} from 'react';
 
-import { Text, View, StyleSheet, Dimensions, ImageBackground } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 
 const API_KEY = "32d86a6f1473247c8b4fd7aca2ab71a2"
+
+const weatherIcon = {
+  
+}
 
 const image = {
   uri : "https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"
@@ -65,14 +69,20 @@ export default function App() {
     }
     
 
-
+    const onPress = () => {
+      console.log("이벤트 함수 발생");
+    }
 
 
   return (
 
     <View style={styles.container} >
 
-      <View>
+
+      <View style={styles.mainContainer}>
+      <TouchableOpacity onPress={onPress}>
+        <Text style={styles.locationchange}>Change Location</Text>
+      </TouchableOpacity>
       <Text style={styles.city}>{city}</Text>
       <Text style={styles.days}>{days}</Text>
       <Text style={styles.doC}>{doC}°C</Text>
@@ -83,38 +93,43 @@ export default function App() {
     <View style={styles.forecast}>
       
       {condition ? 
-      
 
       <View style={styles.foreContainer}>
 
       <View style={styles.foreContainerText}>
+      <Text>1시간 후</Text>
       <Text>{foreW?.hour_1?.main}</Text>
-      <Text>{foreW?.hour_1?.temp}</Text>
+      <Text>{foreW?.hour_1?.temp.toFixed(1)}</Text>
       </View>
 
       <View style={styles.foreContainerText}>
+      <Text>2시간 후</Text>
       <Text>{foreW?.hour_2?.main}</Text>
-      <Text>{foreW?.hour_2?.temp}</Text>
+      <Text>{foreW?.hour_2?.temp.toFixed(1)}</Text>
       </View>
 
       <View style={styles.foreContainerText}>
+      <Text>3시간 후</Text>
       <Text>{foreW?.hour_3?.main}</Text>
-      <Text>{foreW?.hour_3?.temp}</Text>
+      <Text>{foreW?.hour_3?.temp.toFixed(1)}</Text>
       </View>
 
       <View style={styles.foreContainerText}>
+      <Text>4시간 후</Text>
       <Text>{foreW?.hour_4?.main}</Text>
-      <Text>{foreW?.hour_4?.temp}</Text>
+      <Text>{foreW?.hour_4?.temp.toFixed(1)}</Text>
       </View>
 
-      <View style={styles.foreContainer.foreContainerText}>
+      <View style={styles.foreContainerText}>
+      <Text>5시간 후</Text>
       <Text>{foreW?.hour_5?.main}</Text>
-      <Text>{foreW?.hour_5?.temp}</Text>
+      <Text>{foreW?.hour_5?.temp.toFixed(1)}</Text>
       </View>
 
-      <View style={styles.foreContainer.foreContainerText}>
+      <View style={styles.foreContainerText}>
+      <Text>6시간 후</Text>
       <Text>{foreW?.hour_6?.main}</Text>
-      <Text>{foreW?.hour_6?.temp}</Text>
+      <Text>{foreW?.hour_6?.temp.toFixed(1)}</Text>
       </View>
 
       </View>
@@ -135,8 +150,16 @@ const styles= StyleSheet.create({
     backgroundColor:"pink",
     alignItems:"center"
   },
-  city : {
+  mainContainer : {
+    alignItems:"center"
+  },
+  locationchange:{
     marginTop:100,
+    marginBottom : 20,
+    fontSize: 14
+  },
+  city : {
+    
     fontSize:30,
     fontWeight:"800"
   },
@@ -171,8 +194,11 @@ const styles= StyleSheet.create({
     justifyContent:"space-evenly"
   },
   foreContainerText : {
-    alignItems:"center"
-  },
+    alignItems:"center",
+    padding:5
+  },button : {
+    backgroundColor : "white"
+  }
 
 })
 
