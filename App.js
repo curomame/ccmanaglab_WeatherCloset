@@ -22,6 +22,7 @@ export default function App() {
   const [doC, setDoC] = useState("");
   const [foreW, setForeW] = useState({});
   const [condition, setCondition] = useState(true);
+  const [icon, setIcon] = useState("");
 
   useEffect(() => {
     setCondition(!condition)
@@ -51,6 +52,18 @@ export default function App() {
     setCity(location[0].city)
     setDoC(json.current.temp.toFixed(1));
 
+    //온도에 따른 옷 나오기
+
+    let iconW = "";
+    
+    if (doC < 0) {
+      iconW = "🧤";
+      setIcon(iconW);
+    } else if (doC >0) {
+      iconW = "👕"
+      setIcon(iconW);
+    }
+
     // 시간별 날씨 객체 input
 
     const forWobj = {}
@@ -70,7 +83,7 @@ export default function App() {
     
 
     const onPress = () => {
-      console.log("이벤트 함수 발생");
+
     }
 
 
@@ -87,7 +100,7 @@ export default function App() {
       <Text style={styles.days}>{days}</Text>
       <Text style={styles.doC}>{doC}°C</Text>
       <Text style={styles.text}>오늘은 이렇게 입고나가요!</Text>
-      <Text style={styles.wear}>🧤</Text>
+      <Text style={styles.wear}>{icon}</Text>
       </View>
       
     <View style={styles.forecast}>
