@@ -15,4 +15,4 @@ web-build/
 
 # API
 
-/env
+.env
