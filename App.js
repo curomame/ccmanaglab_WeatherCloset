@@ -1,14 +1,8 @@
 import * as Location from 'expo-location';
-import Config from "react-native-config";
+import {REACT_APP_GOOGLE_API_KEY, REACT_APP_WEATHER_API_KEY} from "@env"
+import axios from 'axios';
 import React,{useState, useEffect} from 'react';
-
 import { Text, View, StyleSheet, TouchableOpacity, Alert, Modal, Pressable, TextInput } from 'react-native';
-
-
-const API_KEY = "32d86a6f1473247c8b4fd7aca2ab71a2";
-
-console.log(Config.GOOGLE_API_KEY);
-
 
 export default function App() {
 
@@ -25,13 +19,19 @@ export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchLocation, setSearchLocation] = useState("Search Location");
 
+  const onPress = async () => {
+
+    setModalVisible(!modalVisible);
+  }
+
+
   const onChangeSubmit = () => {
-    
-    //여기에 지역 검색 되는 기능 추가
 
-    //그리고 지역 기반으로 좌표값 변환
-
-    //
+  
+    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`)
+    .then(function (response) {
+      console.log(response.data.results[0].geometry.location);  
+    });
 
     setSearchLocation("Search Location")
     setModalVisible(!modalVisible)
@@ -59,7 +59,7 @@ export default function App() {
 
     const location = await Location.reverseGeocodeAsync({latitude, longitude})
         
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`);
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${REACT_APP_WEATHER_API_KEY}&units=metric`);
     const json = await response.json();
     
     setDays(json.current.weather[0].main);
@@ -96,19 +96,6 @@ export default function App() {
     }
     
 
-    const onPress = async () => {
-      //1. 지역 검색
-
-      fetch('https://jsonplaceholder.typicode.com/posts/1')
-      .then((response) => response.json())
-      .then((json) => console.log(json));
-
-      setModalVisible(!modalVisible);
-
-      //2. 검색에 따른 지역 좌표 받아오기
-
-      //3. 받아온 지역 좌표를 수정하기
-    }
 
 
   return (
@@ -121,7 +108,6 @@ export default function App() {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}
       >
