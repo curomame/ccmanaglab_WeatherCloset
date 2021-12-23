@@ -1,21 +1,16 @@
 import * as Location from 'expo-location';
+import Config from "react-native-config";
 import React,{useState, useEffect} from 'react';
 
-import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert, Modal, Pressable, TextInput } from 'react-native';
 
 
-const API_KEY = "32d86a6f1473247c8b4fd7aca2ab71a2"
+const API_KEY = "32d86a6f1473247c8b4fd7aca2ab71a2";
 
-const weatherIcon = {
-  
-}
+console.log(Config.GOOGLE_API_KEY);
 
-const image = {
-  uri : "https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"
-};
 
 export default function App() {
-
 
   const [city, setCity] = useState("Loading...");
   const [days, setDays] = useState("");
@@ -23,6 +18,25 @@ export default function App() {
   const [foreW, setForeW] = useState({});
   const [condition, setCondition] = useState(true);
   const [icon, setIcon] = useState("");
+
+
+
+  //지역 변경 부분
+  const [modalVisible, setModalVisible] = useState(false);
+  const [searchLocation, setSearchLocation] = useState("Search Location");
+
+  const onChangeSubmit = () => {
+    
+    //여기에 지역 검색 되는 기능 추가
+
+    //그리고 지역 기반으로 좌표값 변환
+
+    //
+
+    setSearchLocation("Search Location")
+    setModalVisible(!modalVisible)
+  }
+
 
   useEffect(() => {
     setCondition(!condition)
@@ -59,9 +73,9 @@ export default function App() {
     if (doC < 0) {
       iconW = "🧤";
       setIcon(iconW);
-    } else if (doC >0) {
+    } else if (doC > 0) {
       iconW = "👕"
-      setIcon(iconW);
+      setIcon(iconW); 
     }
 
     // 시간별 날씨 객체 input
@@ -82,8 +96,18 @@ export default function App() {
     }
     
 
-    const onPress = () => {
+    const onPress = async () => {
+      //1. 지역 검색
 
+      fetch('https://jsonplaceholder.typicode.com/posts/1')
+      .then((response) => response.json())
+      .then((json) => console.log(json));
+
+      setModalVisible(!modalVisible);
+
+      //2. 검색에 따른 지역 좌표 받아오기
+
+      //3. 받아온 지역 좌표를 수정하기
     }
 
 
@@ -91,6 +115,33 @@ export default function App() {
 
     <View style={styles.container} >
 
+
+<Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Hello World!</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+            >
+              <TextInput
+              keyboardType="default"
+              onSubmitEditing={onChangeSubmit}
+              onChangeText={text => setSearchLocation(text)}
+              >
+                {searchLocation}
+              </TextInput>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
 
       <View style={styles.mainContainer}>
       <TouchableOpacity onPress={onPress}>
@@ -211,6 +262,48 @@ const styles= StyleSheet.create({
     padding:5
   },button : {
     backgroundColor : "white"
+  },
+  //modal
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "pink",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
   }
 
 })
