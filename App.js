@@ -12,31 +12,8 @@ export default function App() {
   const [foreW, setForeW] = useState({});
   const [condition, setCondition] = useState(true);
   const [icon, setIcon] = useState("");
-
-
-
-  //지역 변경 부분
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchLocation, setSearchLocation] = useState("Search Location");
-
-  const onPress = async () => {
-
-    setModalVisible(!modalVisible);
-  }
-
-
-  const onChangeSubmit = () => {
-
-  
-    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`)
-    .then(function (response) {
-      console.log(response.data.results[0].geometry.location);  
-    });
-
-    setSearchLocation("Search Location")
-    setModalVisible(!modalVisible)
-  }
-
+  // const [latitudec, setLatitudec] = useState("");
+  // const [longitudec, setLongitudec] = useState("")
 
   useEffect(() => {
     setCondition(!condition)
@@ -46,6 +23,115 @@ export default function App() {
     getLocation();
   },[])
 
+  useEffect(() => {
+    wearWhat()
+  },[doC])
+
+
+//옷 변경
+//온도에 따른 옷 나오기
+
+const wearWhat = () => {
+  let iconW = "";
+      
+  if (doC < 0) {
+    iconW = "🧤";
+    setIcon(iconW);
+  } else if (doC > 0) {
+    iconW = "👕"
+    setIcon(iconW); 
+  }
+
+}
+
+
+
+  //지역 변경 부분
+  const [modalVisible, setModalVisible] = useState(false);
+  const [searchLocation, setSearchLocation] = useState("Search Location");
+
+  //모달 등장
+
+  const onPress = async () => {
+    setModalVisible(!modalVisible);
+  }
+
+  // 바꾸기 누르고 엔터
+  const onChangeSubmit = async () => {
+
+    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`)
+    .then(function (response) {
+
+      ChangeGetLocation(response)
+      
+    });
+
+    setSearchLocation("search Location!");
+    ChangeGetLocation();
+    setModalVisible(!modalVisible);
+  }
+
+  //바꾼 위치로 변경하기 메인 함수 //객체 자체로 들어가야해서 계속 안됐던거였음.
+
+  const ChangeGetLocation = async (response) => {
+
+    const { latitude, longitude } = { latitude : response.data.results[0].geometry.location.lat, longitude : response.data.results[0].geometry.location.lng }
+    const location = await Location.reverseGeocodeAsync({latitude, longitude})
+    setCity(location[0].district);
+
+    //웨더 에이디피아이
+    WeatherAPIuse({ latitude, longitude });
+
+    //옷 변경
+    wearWhat();
+
+  }
+
+
+//웨더 에이피아이 사용 분리
+
+  const WeatherAPIuse = async ({ latitude, longitude }) => {
+
+    try {
+    const responseNew = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${REACT_APP_WEATHER_API_KEY}&units=metric`) ;
+    const json = await responseNew.json();
+
+    setDays(json.current.weather[0].main);
+    setDoC(json.current.temp.toFixed(1));
+    hourlyDoC(json);
+
+    } catch(err){
+      throw err
+    }
+    
+  }
+
+
+//시간별 온도 변경
+
+const hourlyDoC = async (json) => {
+
+  console.log(condition);
+  const hourlyDo = {}
+
+  forhourlyDo = () => {
+      for(let i = 0; i<6; i ++){
+      hourlyDo['hour_'+(i+1)] = { main : json.hourly[i].weather[0].main, temp : json.hourly[i].temp}
+      }
+    setForeW(hourlyDo)      
+  }
+  
+  await forhourlyDo()
+
+  setCondition(!condition)
+  console.log(condition);
+}
+
+
+
+
+
+  //현재 위치를 받아오기
   const getLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
 
@@ -54,29 +140,22 @@ export default function App() {
       return;
     }
 
-    const {coords : {latitude, longitude}} = await Location.getCurrentPositionAsync({accuracy:5});
     
+    const {coords : {latitude, longitude}} = await Location.getCurrentPositionAsync({accuracy:5});
 
     const location = await Location.reverseGeocodeAsync({latitude, longitude})
-        
+
     const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${REACT_APP_WEATHER_API_KEY}&units=metric`);
     const json = await response.json();
     
+
     setDays(json.current.weather[0].main);
     setCity(location[0].city)
     setDoC(json.current.temp.toFixed(1));
 
     //온도에 따른 옷 나오기
 
-    let iconW = "";
-    
-    if (doC < 0) {
-      iconW = "🧤";
-      setIcon(iconW);
-    } else if (doC > 0) {
-      iconW = "👕"
-      setIcon(iconW); 
-    }
+    wearWhat();
 
     // 시간별 날씨 객체 input
 
