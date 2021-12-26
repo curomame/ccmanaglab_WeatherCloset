@@ -10,15 +10,10 @@ export default function App() {
   const [days, setDays] = useState("");
   const [doC, setDoC] = useState("");
   const [foreW, setForeW] = useState({});
-  const [condition, setCondition] = useState(true);
   const [icon, setIcon] = useState("");
   // const [latitudec, setLatitudec] = useState("");
   // const [longitudec, setLongitudec] = useState("")
 
-  useEffect(() => {
-    setCondition(!condition)
-  },[foreW])
-  
   useEffect(() => {
     getLocation();
   },[])
@@ -35,10 +30,10 @@ const wearWhat = () => {
   let iconW = "";
       
   if (doC < 0) {
-    iconW = "🧤";
+    iconW = "❄️";
     setIcon(iconW);
   } else if (doC > 0) {
-    iconW = "👕"
+    iconW = "🌞"
     setIcon(iconW); 
   }
 
@@ -61,7 +56,6 @@ const wearWhat = () => {
 
     axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`)
     .then(function (response) {
-
       ChangeGetLocation(response)
       
     });
@@ -77,8 +71,9 @@ const wearWhat = () => {
 
     const { latitude, longitude } = { latitude : response.data.results[0].geometry.location.lat, longitude : response.data.results[0].geometry.location.lng }
     const location = await Location.reverseGeocodeAsync({latitude, longitude})
-    setCity(location[0].district);
-
+    console.log(location);
+    setCity(location[0].city);
+    
     //웨더 에이디피아이
     WeatherAPIuse({ latitude, longitude });
 
@@ -111,20 +106,17 @@ const wearWhat = () => {
 
 const hourlyDoC = async (json) => {
 
-  console.log(condition);
   const hourlyDo = {}
 
   forhourlyDo = () => {
       for(let i = 0; i<6; i ++){
       hourlyDo['hour_'+(i+1)] = { main : json.hourly[i].weather[0].main, temp : json.hourly[i].temp}
       }
-    setForeW(hourlyDo)      
+    setForeW(hourlyDo)
   }
   
   await forhourlyDo()
 
-  setCondition(!condition)
-  console.log(condition);
 }
 
 
@@ -192,7 +184,8 @@ const hourlyDoC = async (json) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
+            <Text style={styles.modalText}>정확한 위치를 원하신다면,</Text>
+            <Text style={styles.modalText}>시,도,구를 포함하여 검색해주세요 :)</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
             >
@@ -221,7 +214,7 @@ const hourlyDoC = async (json) => {
       
     <View style={styles.forecast}>
       
-      {condition ? 
+
 
       <View style={styles.foreContainer}>
 
@@ -263,7 +256,6 @@ const hourlyDoC = async (json) => {
 
       </View>
 
-      : <Text>Loading</Text>}
 
     </View>
 
