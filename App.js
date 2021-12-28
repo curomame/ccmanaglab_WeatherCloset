@@ -4,6 +4,8 @@ import axios from 'axios';
 import React,{useState, useEffect} from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert, Modal, Pressable, TextInput } from 'react-native';
 
+import ChangeLocation from './src/Components/ChangeLocation';
+
 export default function App() {
 
   const [city, setCity] = useState("Loading...");
@@ -41,46 +43,43 @@ const wearWhat = () => {
 
 
 
-  //지역 변경 부분
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchLocation, setSearchLocation] = useState("Search Location");
+
 
   //모달 등장
 
-  const onPress = async () => {
-    setModalVisible(!modalVisible);
-  }
+  // const onPress = async () => {
+  //   setModalVisible(!modalVisible);
+  // }
 
-  // 바꾸기 누르고 엔터
-  const onChangeSubmit = async () => {
+  // // 바꾸기 누르고 엔터
+  // const onChangeSubmit = async () => {
 
-    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`)
-    .then(function (response) {
-      ChangeGetLocation(response)
+  //   axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`)
+  //   .then(function (response) {
+  //     ChangeGetLocation(response)
       
-    });
+  //   });
 
-    setSearchLocation("search Location!");
-    ChangeGetLocation();
-    setModalVisible(!modalVisible);
-  }
+  //   setSearchLocation("search Location!");
+  //   ChangeGetLocation();
+  //   setModalVisible(!modalVisible);
+  // }
 
   //바꾼 위치로 변경하기 메인 함수 //객체 자체로 들어가야해서 계속 안됐던거였음.
 
-  const ChangeGetLocation = async (response) => {
+  // const ChangeGetLocation = async (response) => {
 
-    const { latitude, longitude } = { latitude : response.data.results[0].geometry.location.lat, longitude : response.data.results[0].geometry.location.lng }
-    const location = await Location.reverseGeocodeAsync({latitude, longitude})
-    console.log(location);
-    setCity(location[0].city);
+  //   const { latitude, longitude } = { latitude : response.data.results[0].geometry.location.lat, longitude : response.data.results[0].geometry.location.lng }
+  //   const location = await Location.reverseGeocodeAsync({latitude, longitude})
+  //   setCity(location[0].city);
     
-    //웨더 에이디피아이
-    WeatherAPIuse({ latitude, longitude });
+  //   //웨더 에이디피아이
+  //   WeatherAPIuse({ latitude, longitude });
 
-    //옷 변경
-    wearWhat();
+  //   //옷 변경
+  //   wearWhat();
 
-  }
+  // }
 
 
 //웨더 에이피아이 사용 분리
@@ -174,37 +173,9 @@ const hourlyDoC = async (json) => {
     <View style={styles.container} >
 
 
-<Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>정확한 위치를 원하신다면,</Text>
-            <Text style={styles.modalText}>시,도,구를 포함하여 검색해주세요 :)</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-            >
-              <TextInput
-              keyboardType="default"
-              onSubmitEditing={onChangeSubmit}
-              onChangeText={text => setSearchLocation(text)}
-              >
-                {searchLocation}
-              </TextInput>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+    <ChangeLocation/>
 
       <View style={styles.mainContainer}>
-      <TouchableOpacity onPress={onPress}>
-        <Text style={styles.locationchange}>Change Location</Text>
-      </TouchableOpacity>
       <Text style={styles.city}>{city}</Text>
       <Text style={styles.days}>{days}</Text>
       <Text style={styles.doC}>{doC}°C</Text>
