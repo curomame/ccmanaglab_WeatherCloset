@@ -1,21 +1,14 @@
 import {REACT_APP_GOOGLE_API_KEY} from "@env"
 import axios from 'axios';
-import React, {useState} from 'react'
+import React,{useState} from 'react'
 import * as Location from 'expo-location';
 import { Modal, View, Pressable, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import WeatherAPIuse from "../Functions/WeatherAPIuse";
-import WearWhat from "../Functions/WearWhat";
 
-export default function changeLocation() {
-  
-  //지역 변경 부분
-  //city는 분리해야함
-const [city, setCity] = useState("Loading...");
-const [days, setDays] = useState("");
-const [doC, setDoC] = useState("");
-const [modalVisible, setModalVisible] = useState(false);
-const [searchLocation, setSearchLocation] = useState("Search Location");
+export default function ChangeLocation() {
+
+  const[modalVisible, setModalVisible] = useState(false);
+  const[searchLocation, setSearchLocation] = useState("search Location!")
 
  //모달 등장
 
@@ -38,18 +31,13 @@ const onChangeSubmit = async () => {
 
 //바꾼 위치로 변경하기 메인 함수 //객체 자체로 들어가야해서 계속 안됐던거였음.
 
-const ChangeGetLocation = async (response) => {
-  const { latitude, longitude } = { latitude : response.data.results[0].geometry.location.lat, longitude : response.data.results[0].geometry.location.lng }
-  const location = await Location.reverseGeocodeAsync({latitude, longitude})
-  setCity(location[0].city);
-  
-  //웨더 에이디피아이
-  WeatherAPIuse({ latitude, longitude },setDays,setDoC);
+// const ChangeGetLocation = async (response) => {
+//   const { latitude, longitude } = { latitude : response.data.results[0].geometry.location.lat, longitude : response.data.results[0].geometry.location.lng }
+//   const location = await Location.reverseGeocodeAsync({latitude, longitude})
+//   setCity(location[0].city);
 
-  //옷 변경
-  WearWhat();
 
-}
+// }
 
   return (
     <>
@@ -87,7 +75,6 @@ onRequestClose={() => {
 </View>
 </>
   )
-
 
   
 }

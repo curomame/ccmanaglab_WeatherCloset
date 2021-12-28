@@ -1,20 +1,19 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Text } from 'react-native';
 
-const WearWhat = () => {
+const WearWhat = (doC) => {
 
-  console.log('wear what?');
-  // const [icon, setIcon] = useState("");
+  let icon = ""
 
-  
-  // let iconW = "";
-      
-  // if (doC < 0) {
-  //   iconW = "❄️";
-  //   setIcon(iconW);
-  // } else if (doC > 0) {
-  //   iconW = "🌞"
-  //   setIcon(iconW); 
-  // }
+  if (doC.wear < 0) {
+    icon = "❄️";
+    } else if (doC.wear > 0) {
+    icon = "🌞"
+  }
+
+  return (
+    <Text>{icon}</Text>
+  )
 
 }
 
