@@ -16,6 +16,7 @@ export default function WeatherAPIuse() {
   const [city, setCity] = useState("");
   const [days, setDays] = useState("");
   const [doC, setDoC] = useState("");
+  const [hourJson, setHourJson] = useState();
 
   useEffect(() => {
     getLocation();
@@ -24,24 +25,37 @@ export default function WeatherAPIuse() {
 
   const getLocation = async () => {
   
+    //현재 위치 받아오기
+    //내 생각에는 return 값을 받아와야 한다고 생각하는디?
 
-  const { status } = await Location.requestForegroundPermissionsAsync();
+    console.log(await CurrentLocation(),3);
 
-  if (status !== 'granted') {
-    setErrorMsg('Permission to access location was denied');
-    return;
-  }
+    // const locationData = await CurrentLocation.latitude;
+    // console.log(locationData);
+    
 
+    // const { status } = await Location.requestForegroundPermissionsAsync();
+
+    // if (status !== 'granted') {
+    //   setErrorMsg('Permission to access location was denied');
+    //   return;
+    // }
   
-  const {coords : {latitude, longitude}} = await Location.getCurrentPositionAsync({accuracy:5});
+    
+    // const {coords : {latitude, longitude}} = await Location.getCurrentPositionAsync({accuracy:5});
+
+    //위치 변경 시도하기
 
 
     const location = await Location.reverseGeocodeAsync({latitude, longitude})
 
     const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${REACT_APP_WEATHER_API_KEY}&units=metric`);
+
+
     const json = await response.json();
-    
-  console.log(json);
+    setHourJson(json);
+
+
     setDays(json.current.weather[0].main);
     setCity(location[0].city)
     setDoC(json.current.temp.toFixed(1));
@@ -62,8 +76,8 @@ export default function WeatherAPIuse() {
         <WearWhat wear={doC} style={styles.wear}/> 
       </View>
       
-    <HourlyWeather data={json} />
-
+    <HourlyWeather data={hourJson} />
+ 
     </View>
   )
 }

@@ -1,26 +1,29 @@
-import React,{useState} from 'react'
+import React,{useState, useEffect} from 'react'
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function HourlyWeather(json) {
 
-  const [foreW, setForeW] = useState({});  
+export default function HourlyWeather(hourJson) {
 
-    console.log(json.data[0]);
-      // 시간별 날씨 객체 input
+  const [foreW, setForeW] = useState({});
+  const forWobj = {}
 
-      // const forWobj = {}
+    useEffect(() => {
+      forWobjFunc();
+    },[hourJson])
 
-      // forWobjFunc = () => {
-      
-      //     for(let i = 0; i<6; i ++){
-      //     forWobj['hour_'+(i+1)] = { main : json.hourly[i].weather[0].main, temp : json.hourly[i].temp}        
-      //   }
-  
-      //   setForeW(forWobj)
-      // }
+  forWobjFunc = () => {
     
-      // forWobjFunc()
+    if(hourJson.data !== undefined){
+    for(let i = 0; i<6; i ++){
+          forWobj['hour_'+(i+1)] = { main : hourJson.data.hourly[i].weather[0].main, temp : hourJson.data.hourly[i].temp}
+      }
+      setForeW(forWobj)
+    }
+    
+  }
 
+
+  
   return (
     <>
       <View style={styles.forecast}>

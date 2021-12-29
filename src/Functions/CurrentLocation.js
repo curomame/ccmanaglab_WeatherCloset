@@ -1,13 +1,10 @@
 import React,{useState, useEffect} from 'react'
 import * as Location from 'expo-location';
 
-export default function CurrentLocation () {
+async function CurrentLocation () {
 
-  useEffect(() => {
-    getLocation();
-  },[])
-
-  const getLocation = async () => {
+    const getLocation = async () => {
+    
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== 'granted') {
@@ -17,9 +14,17 @@ export default function CurrentLocation () {
 
     
     const {coords : {latitude, longitude}} = await Location.getCurrentPositionAsync({accuracy:5});
+    
+    console.log(1);
+    return (3);
 
     }
-
     
 
+    console.log(await getLocation(),4)
+
+    console.log(2);
+
 }
+
+export default CurrentLocation;
