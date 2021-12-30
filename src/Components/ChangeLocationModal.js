@@ -1,80 +1,45 @@
-import React,{useState, useEffect} from 'react'
-import { View, Text, StyleSheet, Modal, Pressable, TextInput, TouchableOpacity } from 'react-native';
+import {REACT_APP_GOOGLE_API_KEY} from "@env"
+import axios from 'axios';
+import React,{useState} from 'react'
+import { Modal, View, Pressable, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import * as Location from 'expo-location';
-import {REACT_APP_WEATHER_API_KEY} from "@env"
 
-import HourlyWeather from './HourlyWeather';
-
-import ChangeLocation from '../Functions/ChangeLocation';
-import CurrentLocation from '../Functions/CurrentLocation'
-import WearWhat from '../Functions/WearWhat';
-
-export default function WeatherAPIuse() {
-
-  const [city, setCity] = useState("");
-  const [days, setDays] = useState("");
-  const [doC, setDoC] = useState("");
-  const [hourJson, setHourJson] = useState();
+export default function ChangeLocation() {
 
   const[modalVisible, setModalVisible] = useState(false);
   const[searchLocation, setSearchLocation] = useState("search Location!")
 
-  useEffect(() => {
-    getLocation();
-  },[])
+ //모달 등장
 
-  //weather api 사용하기 시작
-  const weatherFind = async (LoData) => {
-    const {latitude, longitude} = LoData;
-    const location = await Location.reverseGeocodeAsync({latitude, longitude})
+const onPress = async () => {
+  setModalVisible(!modalVisible);
+}
 
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${REACT_APP_WEATHER_API_KEY}&units=metric`);
+// 바꾸기 누르고 엔터
+const onChangeSubmit = async () => {
 
-
-    const json = await response.json();
-    setHourJson(json);
-
-
-    setDays(json.current.weather[0].main);
-    setCity(location[0].city)
-    setDoC(json.current.temp.toFixed(1));
-  }
-
-
-  //현재 위치 받아오기
-
-  const getLocation = async () => {
-  
-    const LoData = await CurrentLocation();
-    weatherFind(LoData)
-    }
-
-    //검색 위치 받아오기
+  axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`)
+  .then(function (response) {
+    ChangeGetLocation(response)
     
-  const onPress = async () => {
-    setModalVisible(!modalVisible);
-  } 
-    
-  const onChangeSubmit = async () => {
-    
-    await ChangeLocation(searchLocation);
-    console.log(await ChangeLocation(searchLocation) );
-      
-    setSearchLocation("search Location!");
-    setModalVisible(!modalVisible)
+  });
 
-    };
+  setSearchLocation("search Location!");
+  setModalVisible(!modalVisible);
+}
 
-  
+//바꾼 위치로 변경하기 메인 함수 //객체 자체로 들어가야해서 계속 안됐던거였음.
+
+// const ChangeGetLocation = async (response) => {
+//   const { latitude, longitude } = { latitude : response.data.results[0].geometry.location.lat, longitude : response.data.results[0].geometry.location.lng }
+//   const location = await Location.reverseGeocodeAsync({latitude, longitude})
+//   setCity(location[0].city);
 
 
-
-
+// }
 
   return (
-    <View style={styles.container} >
-
+    <>
     <Modal
 animationType="slide"
 transparent={true}
@@ -107,20 +72,10 @@ onRequestClose={() => {
 <Text style={styles.locationchange}>Change Location</Text>
 </TouchableOpacity>
 </View>
-    
-
-      <View style={styles.mainContainer}>
-        <Text style={styles.city}>{city}</Text>
-        <Text style={styles.days}>{days}</Text>
-        <Text style={styles.doC}>{doC}°C</Text>
-        <Text style={styles.text}>오늘은 이렇게 입고나가요!</Text>
-        <WearWhat wear={doC} style={styles.wear}/> 
-      </View>
-      
-    <HourlyWeather data={hourJson} />
- 
-    </View>
+</>
   )
+
+  
 }
 
 const styles= StyleSheet.create({
@@ -137,8 +92,8 @@ const styles= StyleSheet.create({
     marginBottom : 20,
     fontSize: 14
   },
-
   city : {
+    
     fontSize:30,
     fontWeight:"800"
   },
@@ -158,6 +113,10 @@ const styles= StyleSheet.create({
     marginTop: 15,
     fontSize : 20,
   },
+  image : {
+    width: "100%", 
+    height: "100%"
+  },
 
   forecast : {
     fontSize : 12,
@@ -173,7 +132,9 @@ const styles= StyleSheet.create({
     padding:5
   },button : {
     backgroundColor : "white"
-  },centeredView: {
+  },
+  //modal
+  centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -214,7 +175,9 @@ const styles= StyleSheet.create({
     marginBottom: 15,
     textAlign: "center"
   }
+
 })
+
 
 
 
