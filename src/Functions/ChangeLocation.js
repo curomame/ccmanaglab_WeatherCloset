@@ -5,16 +5,16 @@ import {REACT_APP_GOOGLE_API_KEY} from "@env"
 import React from 'react'
 
 const ChangeLocation = async (searchLocation) => {
+  
 
-    let axiosLocation = '4';
+  const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`);
 
-    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchLocation}&key=${REACT_APP_GOOGLE_API_KEY}`)
-    .then(function (response) 
-    {
-      return response;
-    })
+  const json = await response.json();
+  const changeData = { latitude : json.results[0].geometry.location.lat, longitude : json.results[0].geometry.location.lng }
 
-    console.log(this.response);
+  console.log(changeData);
 
-  }
+  return changeData;
+}
+
 export default ChangeLocation;

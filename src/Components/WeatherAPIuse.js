@@ -58,9 +58,8 @@ export default function WeatherAPIuse() {
     
   const onChangeSubmit = async () => {
     
-    await ChangeLocation(searchLocation); 
-    
-
+    const changeData = await ChangeLocation(searchLocation);
+    weatherFind(changeData);
 
     setSearchLocation("search Location!");
     setModalVisible(!modalVisible)
