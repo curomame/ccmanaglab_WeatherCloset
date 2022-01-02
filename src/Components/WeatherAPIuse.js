@@ -10,6 +10,9 @@ import ChangeLocation from '../Functions/ChangeLocation';
 import CurrentLocation from '../Functions/CurrentLocation'
 import WearWhat from '../Functions/WearWhat';
 
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function WeatherAPIuse() {
 
   const [city, setCity] = useState("");
@@ -20,12 +23,30 @@ export default function WeatherAPIuse() {
   const[modalVisible, setModalVisible] = useState(false);
   const[searchLocation, setSearchLocation] = useState("search Location!")
 
+  const[saveLoData, setSaveLoData] = useState();
+
   useEffect(() => {
     getLocation();
   },[])
 
+
+  //마지막으로 검색한 정보 저장하기
+  
+  const storeData = async (value) => {
+    try {
+      const jsonValue = JSON.stringify(value)
+      await AsyncStorage.setItem('@storage_Key', jsonValue)
+    } catch (e) {
+      // saving error
+    }
+  }
+
+
   //weather api 사용하기 시작
   const weatherFind = async (LoData) => {
+
+    console.log(LoData);
+
     const {latitude, longitude} = LoData;
     const location = await Location.reverseGeocodeAsync({latitude, longitude})
 
@@ -39,6 +60,9 @@ export default function WeatherAPIuse() {
     setDays(json.current.weather[0].main);
     setCity(location[0].city)
     setDoC(json.current.temp.toFixed(1));
+
+    setSaveLoData(LoData);
+    console.log(saveLoData);
   }
 
 
@@ -52,21 +76,21 @@ export default function WeatherAPIuse() {
 
     //검색 위치 받아오기
     
+    //모달 띄우기
   const onPress = async () => {
     setModalVisible(!modalVisible);
   } 
     
+    //모달 띄운 후 검색해서 현재 위치로 바꾸기
   const onChangeSubmit = async () => {
     
     const changeData = await ChangeLocation(searchLocation);
     weatherFind(changeData);
-
     setSearchLocation("search Location!");
     setModalVisible(!modalVisible)
 
-    };
 
-  
+    };
 
 
 
@@ -102,10 +126,17 @@ onRequestClose={() => {
 </View>
 </Modal>
 
-<View style={styles.mainContainer}>
-<TouchableOpacity onPress={onPress}>
-<Text style={styles.locationchange}>Change Location</Text>
+<View style={styles.locationchange}>
+
+
+<TouchableOpacity onPress={getLocation}>
+<Text style={styles.locationbutton}>Current Location</Text>
 </TouchableOpacity>
+
+<TouchableOpacity onPress={onPress}>
+<Text style={styles.locationbutton}>Change Location</Text>
+</TouchableOpacity>
+
 </View>
     
 
@@ -132,7 +163,11 @@ const styles= StyleSheet.create({
   mainContainer : {
     alignItems:"center"
   },
+  locationbutton : {
+    margin:10
+  },
   locationchange:{
+    flexDirection:"row",
     marginTop:100,
     marginBottom : 20,
     fontSize: 14
